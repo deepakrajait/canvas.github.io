@@ -1,48 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Table to Image using Canvas</title>
+    <title>Canvas Table with Hyperlinks</title>
 </head>
 <body>
-    <h2>Table in Image Format</h2>
-    <canvas id="tableCanvas" width="400" height="200"></canvas>
-    <br>
-    <button onclick="generateImage()">Generate Image</button>
+    <canvas id="myCanvas" width="400" height="200" style="border:1px solid black;"></canvas>
 
     <script>
-        function generateImage() {
-            // Get the canvas element and its context
-            const canvas = document.getElementById('tableCanvas');
-            const ctx = canvas.getContext('2d');
+        // Get the canvas element and its context
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
 
-            // Define the data for the table
-            const tableData = [
-                ['Name', 'Website', 'City'],
-                ['Deepak', 'Google.com', 'Noida'],
-                ['Sushil', 'Amazon.com', 'Gurgaon'],
-                ['Kalpana', 'Apple.com', 'Hyderabad']
-            ];
+        // Define the table properties
+        var x = 50; // X-coordinate of the top-left corner of the table
+        var y = 50; // Y-coordinate of the top-left corner of the table
+        var cellWidth = 150; // Width of each cell
+        var cellHeight = 30; // Height of each cell
+        var rows = 3; // Number of rows
+        var columns = 2; // Number of columns
 
-            // Define table dimensions
-            const tableWidth = 300;
-            const tableHeight = 120;
-            const cellWidth = tableWidth / tableData[0].length;
-            const cellHeight = tableHeight / tableData.length;
-
-            // Draw the table
-            ctx.font = '14px Arial';
-            for (let i = 0; i < tableData.length; i++) {
-                for (let j = 0; j < tableData[i].length; j++) {
-                    ctx.fillText(tableData[i][j], j * cellWidth, (i + 1) * cellHeight);
-                    ctx.strokeRect(j * cellWidth, i * cellHeight, cellWidth, cellHeight);
+        // Function to draw a single cell with hyperlink
+        function drawCellWithLink(x, y, width, height, text, url) {
+            ctx.strokeRect(x, y, width, height); // Draw cell border
+            ctx.fillText(text, x + 5, y + height / 2 + 5); // Draw text inside the cell
+            // Make the cell clickable and redirect to the given URL when clicked
+            canvas.addEventListener("click", function (event) {
+                var canvasX = event.pageX - canvas.offsetLeft;
+                var canvasY = event.pageY - canvas.offsetTop;
+                if (canvasX > x && canvasX < x + width && canvasY > y && canvasY < y + height) {
+                    window.open(url, "_blank"); // Open URL in a new tab
                 }
-            }
-
-            // Generate the image and open it in a new tab
-            const imageDataURL = canvas.toDataURL();
-            const imageWindow = window.open();
-            imageWindow.document.write('<img src="' + imageDataURL + '">');
+            });
         }
+
+        // Function to draw the entire table
+        function drawTable() {
+            for (var i = 0; i < rows; i++) {
+                var cellX1 = x; // X-coordinate for the first column cell
+                var cellX2 = x + cellWidth; // X-coordinate for the second column cell
+                var cellY = y + i * cellHeight;
+
+                // Draw the first column cell with normal text
+                ctx.strokeRect(cellX1, cellY, cellWidth, cellHeight);
+                ctx.fillText("Row " + (i + 1) + ", Col 1", cellX1 + 5, cellY + cellHeight / 2 + 5);
+
+                // Draw the second column cell with hyperlinked text
+                drawCellWithLink(cellX2, cellY, cellWidth, cellHeight, "Link " + (i + 1), "https://www.example.com");
+            }
+        }
+
+        // Call the drawTable function to draw the table on the canvas
+        drawTable();
     </script>
 </body>
 </html>
